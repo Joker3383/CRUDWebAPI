@@ -1,15 +1,18 @@
 
-using CRUDWebAPI.Models;
+using CEUDWebAPI.Domain.Repositories;
+using CRUDWebAPI.Infrastructure.Persistence;
+using CRUDWebAPI.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ProductContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("ProductCS")));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
