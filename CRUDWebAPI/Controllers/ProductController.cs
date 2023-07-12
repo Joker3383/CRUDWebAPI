@@ -24,5 +24,12 @@ namespace CRUDWebAPI.Controllers
             }
             return Ok(product);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var products = await _repositoryManager.ProductRepository.GetProductsAsync();
+            return Ok(products);
+        }
     }
 }
