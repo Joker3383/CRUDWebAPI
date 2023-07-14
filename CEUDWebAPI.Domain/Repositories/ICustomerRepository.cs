@@ -5,9 +5,9 @@ namespace CEUDWebAPI.Domain.Repositories
     public interface ICustomerRepository : IRepositoryBase<Customer>
     {
         void CreateCustomer(Customer customer);
-        void DeleteCustomer(Guid Id);
-        void ChangeCustomer(Customer customer);
-        Task<IReadOnlyCollection<Customer>> CheckCustomers();
-        Task<Customer?> CheckCustomer(Guid Id);
+        void DeleteCustomer(Customer customer);
+        void UpdateCustomer(Customer customer);
+        Task<IReadOnlyCollection<Customer>> GetAllCustomersAsync();
+        Task<Customer?> GetCustomerByIdAsync(Guid Id);
     }
 }

@@ -18,23 +18,24 @@ namespace CRUDWebAPI.Controllers
             _repositoryManager = repositoryManager;
         }
 
-        
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var customers = await _repositoryManager.CustomerRepository.CheckCustomers();
+            var customers = await _repositoryManager.CustomerRepository.GetAllCustomersAsync();
             return Ok(customers);
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var customer =  await _repositoryManager.CustomerRepository.CheckCustomer(id);
+            var customer =  await _repositoryManager.CustomerRepository.GetCustomerByIdAsync(id);
             if (customer == null)
             {
                 return StatusCode(404);
             }
             return Ok(customer);
         }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCustomerRequest request)
         {
@@ -44,30 +45,31 @@ namespace CRUDWebAPI.Controllers
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             return StatusCode(201);
         }
+
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody]UpdateCustomerReqest reqest)
+        public async Task<IActionResult> Put([FromBody]UpdateCustomerReqest request)
         {
-            var customerReqest = _repositoryManager.CustomerRepository.CheckCustomer(reqest.Id);
-            if (customerReqest == null) 
+            var customer = await _repositoryManager.CustomerRepository.GetCustomerByIdAsync(request.Id);
+            if (customer == null) 
             {
                 return NotFound();
             }
-            var customer = new Customer { Id = reqest.Id,Name = reqest.Name};
-            _repositoryManager.CustomerRepository.ChangeCustomer(customer);
+
+            customer.Name = request.Name;
+            _repositoryManager.CustomerRepository.UpdateCustomer(customer);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             return Ok();
         }
+
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid Id)
         {
-
-            var customer = await _repositoryManager.CustomerRepository.CheckCustomer(Id);
+            var customer = await _repositoryManager.CustomerRepository.GetCustomerByIdAsync(Id);
             if (customer == null)
             {
                 return NotFound();
             }
-            var cust = new Customer { Id = customer.Id, Name = customer.Name };
-            _repositoryManager.CustomerRepository.DeleteCustomer(cust.Id);
+            _repositoryManager.CustomerRepository.DeleteCustomer(customer);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             return Ok();
         }

@@ -1,9 +1,7 @@
 ﻿using CEUDWebAPI.Domain.Repositories;
 using CRUDWebAPI.Contracts.Product;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
 using CEUDWebAPI.Domain.Entities;
-using Azure.Core;
 
 namespace CRUDWebAPI.Controllers
 {
@@ -18,14 +16,13 @@ namespace CRUDWebAPI.Controllers
             _repositoryManager = repositoryManager;
         }
 
-        
-
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var products = await _repositoryManager.ProductRepository.GetProductsAsync();
+            var products = await _repositoryManager.ProductRepository.GetAllProductsAsync();
             return Ok(products);
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -36,38 +33,50 @@ namespace CRUDWebAPI.Controllers
             }
             return Ok(product);
         }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]ProductCreateReqest reqest)
         {
-            var guid = Guid.NewGuid();
-            var product = new Product {Id = guid , Name = reqest.Name,Category = reqest.Category, Count = reqest.Count};
-            _repositoryManager.ProductRepository.PostProductAsync(product);
+            var productId = Guid.NewGuid();
+            var product = new Product 
+            {
+                Id = productId,
+                Name = reqest.Name,
+                Category = reqest.Category,
+                Count = reqest.Count
+            };
+
+            _repositoryManager.ProductRepository.PostProduct(product);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             return StatusCode(201);
         }
+
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] UpdateProductReqest reqest)
+        public async Task<IActionResult> Put([FromBody] UpdateProductReqest request)
         {
-            var product_reqest = _repositoryManager.ProductRepository.GetProductByIdAsync(reqest.Id);
-            if (product_reqest == null) 
+            var product = await _repositoryManager.ProductRepository.GetProductByIdAsync(request.Id);
+            if (product == null) 
             {
                 return NotFound();
             }
-            var product = new Product {Id = reqest.Id, Name =  reqest.Name, Category = reqest.Category,Count = reqest.Count};
-            _repositoryManager.ProductRepository.UpdateProductAsync(product);
+
+            product.Name = request.Name;
+            product.Category = request.Category;
+            product.Count = request.Count;
+            _repositoryManager.ProductRepository.UpdateProduct(product);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             return Ok(product);
         }
+
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid Id)
         {
-            var product_reqest = await _repositoryManager.ProductRepository.GetProductByIdAsync(Id);
-            if (product_reqest == null)
+            var product = await _repositoryManager.ProductRepository.GetProductByIdAsync(Id);
+            if (product == null)
             {
                 return NotFound();
             }
-            var product = new Product { Id = product_reqest.Id, Name = product_reqest.Name, Category = product_reqest.Category, Count = product_reqest.Count };
-            _repositoryManager.ProductRepository.DeleteProductAsync(product.Id);
+            _repositoryManager.ProductRepository.DeleteProduct(product);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             return Ok();
         }

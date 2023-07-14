@@ -8,20 +8,21 @@ namespace CRUDWebAPI.Infrastructure.Persistence.Repositories
     {
         public CustomerRepository(AppDbContext appDbContext) : base(appDbContext) { }
 
-        public void ChangeCustomer(Customer customer)
+        public void UpdateCustomer(Customer customer)
         {
             Update(customer);
         }
 
-        public  async Task<Customer?> CheckCustomer(Guid Id)
+        public async Task<Customer?> GetCustomerByIdAsync(Guid Id)
         {
-            var customer = await FindByCondition(x => x.Id == Id).FirstOrDefaultAsync();
-            return customer;
+            return await FindByCondition(x => x.Id == Id)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<IReadOnlyCollection<Customer>> CheckCustomers()
+        public async Task<IReadOnlyCollection<Customer>> GetAllCustomersAsync()
         {
-            return await FindAll().ToListAsync();
+            return await FindAll()
+                .ToListAsync();
         }
 
         public void CreateCustomer(Customer customer)
@@ -29,10 +30,9 @@ namespace CRUDWebAPI.Infrastructure.Persistence.Repositories
             Create(customer);
         }
 
-        public void DeleteCustomer(Guid Id)
+        public void DeleteCustomer(Customer customer)
         {
-            var customer = FindByCondition(x => x.Id == Id).FirstOrDefault();
-            Delete(customer!);
+            Delete(customer);
         }
     }
 }

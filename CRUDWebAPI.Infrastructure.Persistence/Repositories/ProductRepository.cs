@@ -10,33 +10,31 @@ namespace CRUDWebAPI.Infrastructure.Persistence.Repositories
     {
         public ProductRepository(AppDbContext appDbContext) : base(appDbContext) { }
 
-        public void DeleteProductAsync(Guid productId)
+        public void DeleteProduct(Product product)
         {
-            var product = FindByCondition(x => x.Id == productId).FirstOrDefault();
-            Delete(product!);
-            
+            Delete(product);        
         }
 
-        public  async Task<Product?> GetProductByIdAsync(Guid productId)
+        public async Task<Product?> GetProductByIdAsync(Guid productId)
         {
-            var product = await FindByCondition(x => x.Id == productId).FirstOrDefaultAsync();
-            return product;
+            return await FindByCondition(x => x.Id == productId)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<IReadOnlyCollection<Product>> GetProductsAsync()
+        public async Task<IReadOnlyCollection<Product>> GetAllProductsAsync()
         {
-            return await FindAll().ToListAsync();
+            return await FindAll()
+                .ToListAsync();
         }
 
-        public  void PostProductAsync(Product product)
+        public void PostProduct(Product product)
         {
             Create(product);
         }
 
-        public  void UpdateProductAsync(Product product)
+        public void UpdateProduct(Product product)
         {
            Update(product);
         }
-
     }
 }
