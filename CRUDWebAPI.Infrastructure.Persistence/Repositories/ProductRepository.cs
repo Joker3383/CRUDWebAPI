@@ -2,6 +2,7 @@
 using CEUDWebAPI.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
+using System.ComponentModel;
 
 namespace CRUDWebAPI.Infrastructure.Persistence.Repositories
 {
@@ -9,14 +10,33 @@ namespace CRUDWebAPI.Infrastructure.Persistence.Repositories
     {
         public ProductRepository(AppDbContext appDbContext) : base(appDbContext) { }
 
-        public async Task<Product?> GetProductByIdAsync(Guid productId)
+        public void DeleteProductAsync(Guid productId)
         {
-            return await FindByCondition(x => x.Id == productId).FirstOrDefaultAsync();
+            var product = FindByCondition(x => x.Id == productId).FirstOrDefault();
+            Delete(product!);
+            
+        }
+
+        public  async Task<Product?> GetProductByIdAsync(Guid productId)
+        {
+            var product = await FindByCondition(x => x.Id == productId).FirstOrDefaultAsync();
+            return product;
         }
 
         public async Task<IReadOnlyCollection<Product>> GetProductsAsync()
         {
             return await FindAll().ToListAsync();
         }
+
+        public  void PostProductAsync(Product product)
+        {
+            Create(product);
+        }
+
+        public  void UpdateProductAsync(Product product)
+        {
+           Update(product);
+        }
+
     }
 }

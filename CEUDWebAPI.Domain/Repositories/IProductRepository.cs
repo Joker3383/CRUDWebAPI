@@ -6,5 +6,9 @@ namespace CEUDWebAPI.Domain.Repositories
     {
         Task<Product?> GetProductByIdAsync(Guid productId);
         Task<IReadOnlyCollection<Product>> GetProductsAsync();
+        void PostProductAsync(Product product);
+        void UpdateProductAsync(Product product);
+        void DeleteProductAsync(Guid productId);
+
     }
 }
